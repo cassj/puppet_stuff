@@ -1,0 +1,60 @@
+Requires apache, mysql, php, php::mysql, php::apc, php::intl, php::imagemagick
+All available from https://github.com/cassj/puppet_stuff
+
+Example usage:
+
+# create a mediawiki for test
+# This creates an apache name vhost test.example.com
+# with docroot in /var/www/test.
+# It installs a mediawiki instance at test.example.com/wiki
+# and creates an empty database for it to use
+mediawiki::wiki{'testwiki':
+  mysql_root_pass => $mysql_root_pass,
+  db              => 'testwiki',
+  db_user         => 'test',
+  db_pass         => 'p@ssw0rD',
+  fqdn            => 'test.example.com',
+  port            => 80,
+  docroot         => '/var/www/test',
+  priority        => 10
+}
+
+Once your mediawiki installation is done, you'll need to go to test.example.com/wiki 
+to run the install script. You *can* provide a LocalSettings.php file instead, but this
+will only work if you already have a mediawiki database ready. 
+
+If you want to use the ldap stuff, note that it's only working with AD at the moment
+and you'll have to run puppet once, then run the install script,then run puppet again
+to have ldap enabled. 
+
+#Something like this to set up certs from a local file:
+
+ file{'/etc/pki/CA/certs/tlscerts':
+    source => 'puppet:///files/tlscerts',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '644'
+  }
+
+  # Add the following lines to /etc/openldap/ldap.conf
+  $txt = "
+TLS_CACERT     /etc/pki/CA/certs/tlscerts
+TLS_CACERTFILE /etc/pki/CA/certs/tlscerts
+  "
+  exec{'kcltlscerts':
+    command => "/bin/echo '$txt' >> /etc/openldap/ldap.conf",
+    unless  => "/bin/grep TLS_CACERT /etc/openldap/ldap.conf"
+  }
+
+  mediawiki::ldap{'bioresourcewiki':
+    fqdn        => 'test.example.com',
+    docroot     => '/var/www/test',
+    admin_user  => 'foo',
+    admin_pass  => 'p@ssw0rD',
+    ldap_server => 'fooad.example.com',
+    ldap_domain => 'FOOAD'
+  }
+
+
+
+

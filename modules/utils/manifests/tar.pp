@@ -6,6 +6,7 @@ class utils::tar inherits utils::base {
   }
 
   define untar_file (
+    $file = $name,
     $cwd = "",
     $require = "",
     $user = "",
@@ -15,8 +16,16 @@ class utils::tar inherits utils::base {
     $bzip_filter = false
   )
   {
-    exec{$name:
-      command => "tar -xf $name",
+   if($gzip_filter){
+     $command = "tar -xzf $file"
+   }elsif($bzip_filter){
+     $command = "tar -xjf $file"
+   }else{
+     $command = "tar -xf $file"
+   }
+
+    exec{"$cwd/$file":
+      command => $command,
       cwd     => $cwd,
       require => $require,
       creates => $creates,

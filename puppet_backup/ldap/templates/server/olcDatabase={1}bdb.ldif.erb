@@ -1,0 +1,47 @@
+dn: olcDatabase={1}bdb
+objectClass: olcDatabaseConfig
+objectClass: olcBdbConfig
+olcDatabase: {1}bdb
+olcSuffix: <%= dn %> 
+olcAddContentAcl: FALSE
+olcLastMod: TRUE
+olcMaxDerefDepth: 15
+olcReadOnly: FALSE
+olcRootDN: cn=Manager,<%= dn %>
+olcSyncUseSubentry: FALSE
+olcMonitoring: TRUE
+olcDbDirectory: /var/lib/ldap
+olcDbCacheSize: 1000
+olcDbCheckpoint: 1024 15
+olcDbNoSync: FALSE
+olcDbDirtyRead: FALSE
+olcDbIDLcacheSize: 0
+olcDbIndex: objectClass pres,eq
+olcDbIndex: cn pres,eq,sub
+olcDbIndex: uid pres,eq,sub
+olcDbIndex: uidNumber pres,eq
+olcDbIndex: gidNumber pres,eq
+olcDbIndex: mail pres,eq,sub
+olcDbIndex: ou pres,eq,sub
+olcDbIndex: loginShell pres,eq
+olcDbIndex: sn pres,eq,sub
+olcDbIndex: givenName pres,eq,sub
+olcDbIndex: memberUid pres,eq,sub
+olcDbIndex: nisMapName pres,eq,sub
+olcDbIndex: nisMapEntry pres,eq,sub
+olcDbLinearIndex: FALSE
+olcDbMode: 0600
+olcDbSearchStack: 16
+olcDbShmKey: 0
+olcDbCacheFree: 1
+olcDbDNcacheSize: 0
+structuralObjectClass: olcBdbConfig
+entryUUID: 81e39280-9f35-1030-86f9-677ae20d37c0
+creatorsName: cn=config
+createTimestamp: 20111109154451Z
+entryCSN: 20111109154451.830874Z#000000#000#000000
+modifiersName: cn=config
+modifyTimestamp: 20111109154451Z
+olcRootPW: <%= password %>
+olcTLSCertificateFile: <%= scope.lookupvar('ldap::server::params::slapdcert') %>
+olcTLSCertificateKeyFile: <%= scope.lookupvar('ldap::server::params::slapdkey') %>

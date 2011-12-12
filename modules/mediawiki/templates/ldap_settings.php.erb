@@ -1,0 +1,17 @@
+# Include LDAP Plugin
+
+require_once( "$IP/extensions/LdapAuthentication/LdapAuthentication.php" );
+
+$wgAuth = new LdapAuthenticationPlugin();
+
+$wgLDAPDomainNames = array( "<%= ldap_domain %>" );
+
+$wgLDAPServerNames = array( "<%= ldap_domain %>" => "<%= ldap_server %>" );
+
+$wgLDAPSearchStrings = array( "<%= ldap_domain %>" => "USER-NAME@<%= ldap_domain %>" );
+
+$wgLDAPEncryptionType = array( "<%= ldap_domain %>" => "tls" );  
+
+
+
+
