@@ -1,5 +1,0 @@
-Quick notes to self re tomcat:
-
-$CATALINA_HOME is the root of your tomcat installation
-$CATALINA_BASE is the root of each instance. If tomcat isn't configured for multiple instances then it is the same as $CATALINA_HOME
-

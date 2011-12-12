@@ -1,3 +1,0 @@
-class obiba::ark () {
-
-}
