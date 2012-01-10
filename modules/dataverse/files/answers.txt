@@ -1,0 +1,13 @@
+dataverse.brc.iop.kcl.ac.uk
+/usr/local/glassfish
+localhost
+5432
+dvnDb
+dvnApp
+B10inform@x
+localhost
+6311
+rserve
+B10inform@x
+y
+
