@@ -1,4 +1,6 @@
-class sudo{
+# parameterized on the grounds that I don't want my sudoers file 
+# in a public module 
+class sudo ($sudoers_file){
 
   package {sudo:
     ensure => present,
@@ -15,7 +17,7 @@ class sudo{
     owner   => 'root',
     group   => 'root',
     mode    => 0440,
-    source  => "puppet:///modules/sudo/etc/sudoers",
+    source  => $sudoers_file,
     require => Package['sudo'],
   }
 

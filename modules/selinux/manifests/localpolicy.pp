@@ -2,7 +2,9 @@
 # Although hopefully future versions of puppet will let you 
 # specify other locations.
 define selinux::localpolicy(policy_file_name, policy_file_uri){
-
+ 
+  include selinux::install
+  
   # upload your selinux policy file
   file{"$policy_file_name":
     path    => "/tmp/$policy_file_name",

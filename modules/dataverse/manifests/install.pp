@@ -65,7 +65,7 @@ class dataverse::install {
   # dropdb -U dvnApp dvnDb
   # dropuser -U dvnApp
   exec{'dataverse-install-script':
-     unless  => "echo '\q' | psql -U dvnApp"
+     unless  => "echo '\q' | psql -U dvnApp -d dvnDb",
      cwd     => "$dataverse::params::libdir/$dataverse::params::install_dir/dvninstall",
      command => "$dataverse::params::libdir/$dataverse::params::install_dir/dvninstall/install < answers.txt"
   }
