@@ -1,9 +1,7 @@
 class django::install{
 
-  include django::params
+  include django::params, python::params
 
-  package{$django::params::pkg_name :
-    ensure => present
-  }
+  exec{"$python::params::pip_binary install $django::params::pkg_name":}
 
 }

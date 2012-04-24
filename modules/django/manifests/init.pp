@@ -1,3 +1,3 @@
 class django{
-  include python, django::params, django::install
+  include python, python::pip, django::params, django::install
 }

@@ -1,6 +1,9 @@
-define apache::vhost( $port, $docroot, $ssl=true, $template='apache/vhost.conf.erb', $priority, $serveraliases='', $overrides='None' ){
+define python::wsgi(template="python/wsgi.conf.erb"){
 
-  include apache
+#define apache::vhost( $port, $docroot, $ssl=true, $template='apache/vhost.conf.erb', $priority, $serveraliases='' ){
+
+  include apache::mod_wsgi
+  include django
 
   file { "$apache::params::vhostdir/${priority}-${name}.conf" :
     content => template($template),
@@ -10,6 +13,7 @@ define apache::vhost( $port, $docroot, $ssl=true, $template='apache/vhost.conf.e
     require => Class['apache::install'],
     notify  => Class['apache::service']
   }
+
 
 }
 

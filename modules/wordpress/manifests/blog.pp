@@ -8,7 +8,10 @@ define wordpress::blog(
   $docroot,
   $priority=10,
   $localsettings='',
-  $rooturl = 0
+  $rooturl = false,
+  $create_vhost = true,
+  $create_docroot = false,
+  $blog_dir = 'blog'
 ){
 
   include apache,mysql,php
@@ -32,23 +35,26 @@ define wordpress::blog(
     require       => [Mysql::Database[$db], Mysql::User[$db_user]]
  }
 
-  # create apache vhost
+if ($create_vhost){
   apache::vhost{$fqdn:
-    port     => $port,
-    docroot  => $docroot,
-    priority => $priority
-  }
-
+     port     => $port,
+     docroot  => $docroot,
+     priority => $priority
+   }
+}
 
 
   # ensure your docroot location exists and is owned by apache
   # currently this isn't bothering to deal with selinux. 
   # as long as your files are under /var/www somewhere,
   # they'll inherit the right context
-  file{$docroot:
-    ensure => directory,
-    owner  => $apache::params::user,
-    group  => $apache::params::group,
+  if ($create_docroot){
+    file{"$docroot":
+      name   => $docroot,
+      ensure => directory,
+      owner  => $apache::params::user,
+      group  => $apache::params::group,
+    }
   }
  
 
@@ -87,8 +93,8 @@ define wordpress::blog(
   else{
     # create a symlink called 'blog' to the unpacked dir
     exec{"wordpress-symlink-$fqdn":
-      command   => "/bin/ln -s $wordpress::params::download_dir blog",
-      creates   => "$docroot/wiki",
+      command   => "/bin/ln -s $wordpress::params::download_dir $blog_dir",
+      creates   => "$docroot/$blog_dir",
       cwd       => $docroot,
       require   => Utils::Tar::Untar_file["$fqdn-$wordpress::params::download_file"], 
       subscribe => Utils::Tar::Untar_file["$fqdn-$wordpress::params::download_file"] 

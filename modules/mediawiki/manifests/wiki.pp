@@ -7,12 +7,15 @@ define mediawiki::wiki(
   $port=80,
   $docroot,
   $priority=10,
-  $localsettings=''
+  $localsettings='',
+  $confirmaccount=0
 ){
 
   include apache,mysql,php
   include mediawiki::params
   include utils::tar
+
+  Exec{path =>$mediawiki::params::path}
 
   # create mysql database, user, give user access
   mysql::database{$db:
@@ -95,6 +98,34 @@ define mediawiki::wiki(
       subscribe => Utils::Tar::Untar_file["$fqdn-mediawiki::params::download_file"]
     }
   }
+
+  # add the confimaccount extension if requested
+  if($confirmaccount){
+    file{"$docroot/$mediawiki::params::download_dir/extensions/ConfirmAccount.tgz":
+      ensure => file,
+      source => 'puppet:///modules/mediawiki/ConfirmAccount.tgz'
+    }
+    utils::tar::untar_file{"$docroot/$mediawiki::params::download_dir/extensions/ConfirmAccount.tgz":
+      file        => "ConfirmAccount.tgz",
+      cwd         => "$docroot/$mediawiki::params::download_dir/extensions",
+      user        => $apache::params::user,
+      group       => $apache::params::group,
+      gzip_filter => true,
+      creates     => "$docroot/$mediawiki::params::download_dir/extensions/ConfirmAccount",
+      require     => File["$docroot/$mediawiki::params::download_dir/extensions/ConfirmAccount.tgz"]
+    }
+    exec{"echo 'require_once(\"$docroot/$mediawiki::params::download_dir/extensions/ConfirmAccount/ConfirmAccount.php\");' >> $docroot/$mediawiki::params::download_dir/LocalSettings.php":
+      unless => "grep ConfirmAccount.php $docroot/$mediawiki::params::download_dir/LocalSettings.php"
+    }   
+  }
+
+# This doesn't work. Do it manually.
+#  # Just in case there are any changes required 
+#  exec{"$docroot/$mediawiki::params::download_dir-update":
+#    command => 'php maintenance/update.php',
+#    cwd     => "$docroot/$mediawiki::params::download_dir"
+#  }
+
 
 }
 
