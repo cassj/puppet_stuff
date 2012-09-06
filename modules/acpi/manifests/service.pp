@@ -1,10 +1,10 @@
-class acpid::service {
-  service { $acpid::params::service:
+class acpi::service {
+  service { $acpi::params::service:
     ensure     => running,
     hasstatus  => true,
     hasrestart => true,
     enable     => true,
-    require    => Class['acpid::install']
+    require    => Class['acpi::install']
   }
 }
 
