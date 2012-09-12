@@ -1,0 +1,12 @@
+# Defaults for puppet - sourced by /etc/init.d/puppet
+# Note that this is only sourced by the init script on debian based machines.
+# I've just changed it to allow the daemon to start. If you want to put anything
+# else in here you'll need to modify the init script on rhel machines to use
+# this file
+
+# Start puppet on boot?
+START=yes
+
+# Startup options
+DAEMON_OPTS=""
+
