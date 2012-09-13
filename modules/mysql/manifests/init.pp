@@ -1,3 +1,7 @@
-class mysql (){
-  include mysql::params, mysql::install, mysql::config, mysql::service
+class mysql ($configsource){
+  include mysql::params, mysql::install 
+  class{'mysql::config':
+         configsource => $configsource
+  }
+  include mysql::service
 }

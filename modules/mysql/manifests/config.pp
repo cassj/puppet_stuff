@@ -1,8 +1,8 @@
-class mysql::config{
+class mysql::config($configsource){
 
   file{$mysql::params::cfg_file:
     ensure  => present,
-    source  => 'puppet:///modules/mysql/my.cnf',
+    source  => $configsource,
     owner   => $mysql::params::user,
     group   => $mysql::params::user,
     require => Class['mysql::install'],
