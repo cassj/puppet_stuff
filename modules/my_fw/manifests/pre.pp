@@ -17,6 +17,21 @@ class my_fw::pre {
     proto   => 'all',
     state   => ['RELATED', 'ESTABLISHED'],
     action  => 'accept',
+  }->
+  firewall { '100 allow ssh on 22':
+      state => ['NEW'],
+      dport => '22',
+      proto => 'tcp',
+      action  => 'accept',
+  }->
+  firewall {'101 forward 51515 to ssh on 22':
+    chain    => 'PREROUTING',
+    table    => 'nat',
+    proto    => 'tcp',
+    jump     => 'REDIRECT',
+    dport    => '51515',
+    toports   => '22'
   }
+
 }
 

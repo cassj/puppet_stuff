@@ -1,23 +1,7 @@
 class opal::firewall {
 
-  include my_fw 
+  require 'my_fw' 
 
-  firewall { '100 allow ssh on 22':
-      state => ['NEW'],
-      dport => '22',
-      proto => 'tcp',
-      action  => 'accept',
-  }
-
-  firewall {'101 forward 51515 to ssh on 22':
-    chain    => 'PREROUTING',
-    table    => 'nat',
-    proto    => 'tcp',
-    jump     => 'REDIRECT',
-    dport    => '51515',
-    toports   => '22' 
-  }
-  
   firewall {'110 allow ssh on 8022':
     state => 'NEW',
     dport => '8022',
