@@ -7,10 +7,10 @@ class puppet::master{
     ensure => installed
   }
 
-  service { 'puppetmasterd':
+  service { 'puppetmaster':
     ensure => running,
     hasstatus => true,
-    hasstart => true,
+    hasrestart => true,
     enable => true,
     require => File['/etc/puppet/puppet.conf']
   

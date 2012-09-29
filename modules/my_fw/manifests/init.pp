@@ -13,8 +13,8 @@ class my_fw {
   ## Always persist firewall rules
   exec { 'persist-firewall':
     command     => $operatingsystem ? {
-      'debian'          => '/sbin/iptables-save > /etc/iptables/rules.v4',
-      /(RedHat|CentOS)/ => '/sbin/iptables-save > /etc/sysconfig/iptables',
+      'debian'                     => '/sbin/iptables-save > /etc/iptables/rules.v4',
+      /(RedHat|CentOS|Scientific)/ => '/sbin/iptables-save > /etc/sysconfig/iptables',
     },
     refreshonly => true,
   }

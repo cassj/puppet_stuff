@@ -41,7 +41,8 @@ class git::gitlab::users(pubkey,privkey){
   user {'gitlab':
     ensure  => present,
     gid     => 'git',
-    home    => '/home/gitlab'
+    home    => '/home/gitlab',
+    shell   => '/bin/bash'
   }
   file {'/home/gitlab':
     ensure  => directory,

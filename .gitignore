@@ -3,3 +3,4 @@ puppet_backup*
 *.tgz
 *.tar.gz
 *.deb
+modules/puppet-pip*

@@ -53,6 +53,7 @@ class git::gitlab::gitolite{
     command => "sed -i 's/0077/0007/g' /home/git/.gitolite.rc",
     user    => 'git',
     cwd     => '/home/git',
+    refreshonly => true,
     require => Exec['setup_gitlab_gitolite']
   }
 
@@ -66,9 +67,13 @@ class git::gitlab::gitolite{
     mode   => 770
   } 
 
-  # Clone admin repo to add localhost to known_hosts
-  
-  
+  # add localhost rsa-key to known_hosts 
+  sshkey{'git-localhost':
+   ensure => present,
+   key    => $sshrsakey,
+   name   => 'localhost',
+   type   => 'ssh-rsa'
+  } 
 
 }
 
