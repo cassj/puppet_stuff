@@ -5,5 +5,6 @@ class opal::service {
     hasrestart => true,
     enable     => true,
     require    => Class['opal::install'],
+    subscribe  => Class['opal::config']
   }
 }

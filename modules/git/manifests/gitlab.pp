@@ -1,4 +1,4 @@
-class git::gitlab(pubkey, privkey, config, dbconfig, unicornconfig){
+class git::gitlab($pubkey, $privkey, $config, $dbconfig, $unicornconfig){
   require 'python::pip'
 
   class {'git::gitlab::users':

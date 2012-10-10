@@ -1,2 +1,9 @@
-# Just use default config for now. Once Abhi has the config as he wants 
-# it we can put the config file here.
+class opal::config ($config){
+  file{'/etc/opal/opal-config.properties':
+    ensure => file,
+    owner  => 'opal',
+    group  => 'adm',
+    source => $config,
+    mode   => 750
+  }
+}

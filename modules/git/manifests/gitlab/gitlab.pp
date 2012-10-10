@@ -1,4 +1,4 @@
-class git::gitlab::gitlab(config,dbconfig,unicornconfig){
+class git::gitlab::gitlab($config,$dbconfig,$unicornconfig){
 
  require 'git::gitlab::gitolite'
  require 'ruby::params'

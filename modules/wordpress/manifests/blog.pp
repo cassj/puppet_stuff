@@ -1,9 +1,9 @@
 define wordpress::blog(
-  mysql_root_pass,
-  db,
-  db_user,
-  db_pass,
-  fqdn,
+  $mysql_root_pass,
+  $db,
+  $db_user,
+  $db_pass,
+  $fqdn,
   $port=80,
   $docroot,
   $priority=10,
@@ -67,6 +67,7 @@ if ($create_vhost){
     require   => File["$docroot"],
     user      => $apache::params::user,
     group     => $apache::params::group,
+    mode      => 750
   }
 
 
@@ -102,7 +103,6 @@ if ($create_vhost){
   }
 
 # At this point, go to $fqdn[/$blog]/wp-admin/install.php
-
 
 }
 

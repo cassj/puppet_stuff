@@ -1,4 +1,4 @@
-class git::gitlab::users(pubkey,privkey){
+class git::gitlab::users($pubkey,$privkey){
 
   group {'git':
     ensure => present
