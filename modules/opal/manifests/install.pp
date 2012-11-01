@@ -1,19 +1,39 @@
-class opal::install {
+class opal::install{
 
   case $operatingsystem{
     /Ubuntu|Debian/:{
 
+     file {'/root/obiba.org.key':
+       ensure => file,
+       owner  => 'root',
+       group  => 'root',
+       mode   => 700,
+       source => 'puppet:///modules/opal/obiba.org.key'
+     }
+
       exec {"opal-obiba-key":
-        command => "/usr/bin/wget http://pkg.obiba.org/obiba.org.key && apt-key add obiba.org.key ", 
-        unless  => "/bin/grep 'obiba' /etc/apt/sources.list"
+        command => "/usr/bin/apt-key add /root/obiba.org.key", 
+        refreshonly => true,
+        subscribe => File['/root/obiba.org.key']
       }
-      exec{"opal-obiba-repo":
-         command => '/bin/echo "\ndeb http://pkg.obiba.org stable/ \n" /etc/apt/sources.list',
-         unless  => "/bin/grep 'obiba' /etc/apt/sources.list "
+     
+      # Note to self - this is the whole obiba repo so if you try and install
+      # two obiba components on one server it will complain. 
+      file {"/etc/apt/sources.list.d/opal.list":
+        ensure => file,
+        owner  => 'root',
+        group  => 'root',
+        mode   => 644,
+        source => 'puppet:///modules/opal/opal.list'
+      }
+      exec{'/usr/bin/apt-get update':
+        refreshonly => true,
+        subscribe => File['/etc/apt/sources.list.d/opal.list']
       }
 
       package { "opal":
-       ensure   => latest,
+       ensure   => '1.10.5-b16934',
+       require  => File['/etc/apt/sources.list.d/opal.list']
       }
     }
     /(RedHat|CentOS|Fedora|Scientific)/:{

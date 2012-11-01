@@ -15,10 +15,17 @@ class sunjava{
   }
  
   # link this version to /usr/java/latest
+  file{'/usr/java':
+    ensure => directory,
+    owner  => 'root',
+    group  => 'root',
+    mode   => 755
+  }
   exec{'set-sunjava-latest':
-    command     => '/bin/ln -s /usr/java/jdk1.7.0_07 /usr/java/latest',
+    command     => '/bin/ln -sf /usr/java/jdk1.7.0_07 /usr/java/latest',
     subscribe   => Exec['install-sunjava'],
-    creates     => '/usr/java/latest'
+    creates     => '/usr/java/latest',
+    require     => File['/usr/java']
   }
 
 
