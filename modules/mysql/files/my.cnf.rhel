@@ -10,6 +10,10 @@ old_passwords=1
 # to do so, uncomment this line:
 # symbolic-links=0
 
+
+bind-address            = 127.0.0.1
+
+
 [mysqld_safe]
 err-log=/var/log/mysqld.log
 pid-file=/var/run/mysqld/mysqld.pid

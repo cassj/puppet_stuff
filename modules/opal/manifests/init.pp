@@ -1,4 +1,4 @@
-class opal ($config, $opaldb='opal', $opalkeydb='opalkey', $dbuser, $dbpass, $mysql_root_pass){
+class opal ($config,$auth_config, $opaldb='opal', $opalkeydb='opalkey', $dbuser, $dbpass, $mysql_root_pass){
 
   class{'opal::db':
     opaldb          => $opaldb,
@@ -11,7 +11,8 @@ class opal ($config, $opaldb='opal', $opalkeydb='opalkey', $dbuser, $dbpass, $my
   include opal::install
 
   class{'opal::config':
-    config => $config
+    config => $config,
+    auth_config => $auth_config
   }
   include opal::service,opal::firewall
 }
