@@ -39,6 +39,7 @@ class biomart::install ($version){
     subscribe   => Exec['checkout-biomart-svn']
   }
  
-  
+ 
+  # Configuration should be done through the mart configurator once the installation has been completed.  
   
 }
