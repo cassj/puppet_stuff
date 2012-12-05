@@ -1,7 +1,7 @@
 # Note that at the moment, the URI has to be a puppet:// location
 # Although hopefully future versions of puppet will let you 
 # specify other locations.
-define selinux::localpolicy(policy_file_name, policy_file_uri){
+define selinux::localpolicy($policy_file_name, $policy_file_uri){
  
   include selinux::install
   

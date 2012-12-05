@@ -4,7 +4,7 @@ class tomcat::config {
 
   file {"$tomcat::params::catalina_base":
      ensure  => directory,
-      recurse => true,
+     recurse => true,
      owner   => $tomcat::params::user,
      group   => $tomcat::params::group
    }
