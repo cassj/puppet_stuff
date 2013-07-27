@@ -20,52 +20,22 @@ class glassfish::install{
     mode      => 700
   }
 
-#  #and unzip it
-#  utils::zip::unzip_file {$glassfish::params::download_file:
-#    cwd      => "$glassfish::params::install_dir",
-#    creates  => "$glassfish::params::install_dir/glassfish",
-#    user     => 'root',
-#    group    => 'root',
-#    require  => Utils::Download_file[$glassfish::params::download_file]
-#  }
-# 
-#
-## for now, I only need the temp domain. Will write something to manage
-## domains and config when I need it.
-#exec{'glassfish-start-domain':
-#  command => "$glassfish::params::as_install/bin/asadmin start-domain",
-#  unless  => "$glassfish::params::as_install/bin/asadmin list-domains | grep 'domain1 running'" 
-#}
 
-
-  file{"$glassfish::params::install_dir/accept.txt":
-    content => "A\n",
-  }
-  exec {'glassfish-jar-install':
-    cwd     => $glassfish::params::install_dir,
-    command => "java -Xmx256m -jar $glassfish::params::install_dir/$glassfish::params::download_file < $glassfish::params::install_dir/accept.txt",
-    creates => "$glassfish::params::install_dir/glassfish",
-    require => [ File["$glassfish::params::install_dir/$glassfish::params::download_file"], File["$glassfish::params::install_dir/accept.txt"] ]
-  }
-  exec {'glassfish-setx':
-    cwd     => "$glassfish::params::as_install",
-    command => "chmod -R +x lib/ant/bin",
-    require => Exec['glassfish-jar-install']
-  }
-  exec{'sunjava-glassfish-setupscript':
-    cwd     => "$glassfish::params::as_install",
-    command => "$glassfish::params::as_install/lib/ant/bin/ant -f setup.xml",
-    creates => "$glassfish::params::as_install/domains/domain1",
-    require => Exec['glassfish-setx']
+  # upload the install answers.
+  file{"$glassfish::params::install_dir/answers":
+     content   => template('glassfish/answers.erb'),
+     owner   => 'root',
+     group   => 'root',
+     mode    => 600,
+     require => File["$glassfish::params::install_dir"]
   }
 
-#  #to get this to work with ant we need to set some environment variables
-#  file{'/etc/profile.d/glassfish.sh':
-#    ensure => file,
-#    owner  => 'root',
-#    group  => 'root',
-#    source => 'puppet:///modules/glassfish/glassfish.sh' 
-#  }
 
-  
+  # Run the installer
+  exec{'glassfish-install':
+    command => "$glassfish::params::install_dir/glassfish-3.1.2.2-unix.sh -a answers -s",
+    creates => "$glassfish::params::install_dir/glassfish"
+  }
+
+
 }

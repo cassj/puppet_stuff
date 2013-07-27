@@ -82,7 +82,7 @@ if ($create_vhost){
   }
 
   if ($rooturl) {
-    # copy the files into the root dir
+    # move the files into the root dir
     exec{"wordpress-move-$fqdn":
       command  => "/bin/mv  $wordpress::params::download_dir/* $docroot/",
       cwd      => $docroot,

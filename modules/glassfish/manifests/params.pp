@@ -1,17 +1,9 @@
-class glassfish::params{
+class glassfish::params ($java_class, $install_dir, $port, $admin_port, $admin_user, $admin_password){
 
   $path = '/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin'
-  $java_class = 'sunjava'
-  $install_dir = '/usr/local' 
-  $download_site = 'http://download.java.net/javaee5/v2.1.1_branch/promoted/Linux'
-  $download_file = 'glassfish-installer-v2.1.1-b31g-linux.jar'
-  $as_install = "$install_dir/glassfish"
 
+  $download_site  = 'http://download.java.net/glassfish/3.1.2.2/release/'
+  $download_file  = 'glassfish-3.1.2.2-unix.sh'
 
-  #$download_file = 'glassfish-3.1.1.zip'
-  #$download_site = 'http://download.java.net/glassfish/3.1.1/release' 
-  #$as_install = "$install_dir/glassfish/glassfish3/glassfish"
-  #$as_install_parent = "$install_dir/glassfish/glassfish3"
-  #$domain_root_dir = "$as_install/domains"
 
 }

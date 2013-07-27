@@ -4,7 +4,7 @@ class git::params {
       $pkg_name = 'git-core'
     }
     /(RedHat|CentOS|Fedora|Scientific)/:{
-      $pkg_name = 'git-core'
+      $pkg_name = 'git'
     }
   }
 }

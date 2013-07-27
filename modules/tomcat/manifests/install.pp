@@ -4,7 +4,7 @@ class tomcat::install{
   require 'ant' 
 
   package {$tomcat::params::pkgname:
-    ensure => present
+    ensure => latest
   }
 
   # and add a profile.d file to set JAVA_HOME appropriately

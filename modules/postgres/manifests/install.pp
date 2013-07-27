@@ -30,8 +30,8 @@ class postgres::install{
   }
 
   exec{'postgres-initdb':
-    unless => "test -d $postgres::params::datadir",
     command => "service $postgres::params::service initdb",
+    creates => "$postgres::params::datadir/pg_log",
     require => Package[$postgres::params::pkg]
   }
 

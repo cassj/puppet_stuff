@@ -4,6 +4,8 @@ class dataverse::params{
   $user   = 'dataverse'
   $group  = 'dataverse'
   $libdir = '/var/lib/dataverse'
-  $install_file = 'dvninstall_v2_2_4.zip'
-  $install_dir = 'dvninstall_v2_2_4'
+  $install_file = 'dvninstall_v3_0.zip'
+  $install_dir = 'dvninstall_v3_0'
+#  $install_file = 'dvninstall_v2_2_4.zip'
+#  $install_dir = 'dvninstall_v2_2_4'
 }

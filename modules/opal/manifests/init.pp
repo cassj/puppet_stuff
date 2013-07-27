@@ -14,5 +14,5 @@ class opal ($config,$auth_config, $opaldb='opal', $opalkeydb='opalkey', $dbuser,
     config => $config,
     auth_config => $auth_config
   }
-  include opal::service,opal::firewall
+  include opal::service, opal::firewall
 }

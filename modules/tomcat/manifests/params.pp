@@ -4,7 +4,7 @@ class tomcat::params {
 
   case $operatingsystem {
     /(Ubuntu|Debian)/:{
-      $pkgname       = ['tomcat6','tomcat6-admin']
+      $pkgname       = ['tomcat6']
       $service       = 'tomcat6'
       $port          = 8080
       $user          = 'tomcat6'
@@ -15,7 +15,7 @@ class tomcat::params {
       $catalina_base = '/usr/share/tomcat6'
     }
     /(RedHat|CentOS|Fedora|Scientific)/:{
-      $pkgname       = ['tomcat6','tomcat6-admin-webapps']
+      $pkgname       = ['tomcat6']
       $service       = 'tomcat6'
       $port          = 8080
       $user          = 'tomcat'

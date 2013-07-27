@@ -1,17 +1,19 @@
 class sunjava{
+
+  # can we use inheritance to do this for different versions?
  
-  file{'/tmp/jdk-7u7-linux-x64.rpm':
+  file{'/tmp/jdk-7u15-linux-x64.rpm':
     ensure => file,
     owner  => 'root',
     group  => 'root',
     mode   => '755',
-    source => 'puppet:///modules/sunjava/jdk-7u7-linux-x64.rpm'
+    source => 'puppet:///modules/sunjava/jdk-7u15-linux-x64.rpm'
   }
   exec{'install-sunjava':
-    command  => '/bin/rpm -i /tmp/jdk-7u7-linux-x64.rpm',
+    command  => '/bin/rpm -i /tmp/jdk-7u15-linux-x64.rpm',
     unless   => "/bin/bash -c '/bin/rpm -qa | /bin/grep ^jdk'",
-    require  => File['/tmp/jdk-7u7-linux-x64.rpm'],
-    subscribe => File['/tmp/jdk-7u7-linux-x64.rpm']
+    require  => File['/tmp/jdk-7u15-linux-x64.rpm'],
+    subscribe => File['/tmp/jdk-7u15-linux-x64.rpm']
   }
  
   # link this version to /usr/java/latest
@@ -22,7 +24,7 @@ class sunjava{
     mode   => 755
   }
   exec{'set-sunjava-latest':
-    command     => '/bin/ln -sf /usr/java/jdk1.7.0_07 /usr/java/latest',
+    command     => '/bin/ln -sf /usr/java/jdk1.7.0_15 /usr/java/latest',
     subscribe   => Exec['install-sunjava'],
     creates     => '/usr/java/latest',
     require     => File['/usr/java']

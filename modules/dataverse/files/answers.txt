@@ -1,6 +1,7 @@
 dataverse.brc.iop.kcl.ac.uk
-/usr/local/glassfish
+/usr/local/glassfish/glassfish
 localhost
+locahost
 5432
 dvnDb
 dvnApp

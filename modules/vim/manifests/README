@@ -1,0 +1,17 @@
+To install git on your node, you can just 
+
+  include git
+
+Installation of gitlab is based on 
+https://github.com/gitlabhq/gitlabhq/blob/stable/doc/installation.md
+
+For gitlab / gitolite to work, you will need to create an rsa keypair
+put them somewhere puppet can find them and tell the module where
+they are when you include the class in your node definition. 
+For example:
+
+  class {'git::gitlab':
+             pubkey  => "puppet:///files/gitlab-id_rsa.pub",
+             privkey => "puppet:///files/gitlab-id_rsa"
+  }
+
