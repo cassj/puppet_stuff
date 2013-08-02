@@ -1,124 +1,174 @@
-class git::gitlab::gitlab($config,$dbconfig,$unicornconfig){
+class git::gitlab::gitlab ($gitlab_config_file, $gitlab_unicorn_config_file,$gitlab_git_config_file, $gitlab_database_config_file,$gitlab_init_file, $gitlab_puma_config_file, $gitlab_nginx_config_file){
 
- require 'git::gitlab::gitolite'
- require 'ruby::params'
- require 'nginx'
+  # Note that this requires teh vcsrepo module on the server
+  # puppet module install puppetlabs/vcsrepo
 
-  Exec{
-    path  => ['/usr/local/sbin','/usr/local/bin','/usr/sbin','/usr/bin','/sbin','/bin','/home/git/bin',$ruby::params::gems_bin]
+  # clone the appropriate version of gitlab git repo: 
+  vcsrepo { "/home/git/gitlab":
+      ensure => present,
+      provider => git,
+      source => "https://github.com/gitlabhq/gitlabhq.git",
+      revision => '5-3-stable'
   }
 
- # Get gitlab stable branch 
-  exec{'clone-gitlab-gitlab':
-    command     => 'git clone -b stable https://github.com/gitlabhq/gitlabhq.git gitlab',
-    cwd         => '/home/gitlab',
-    user        => 'gitlab',
-    environment => 'HOME=/home/gitlab',
-    creates     => '/home/gitlab/gitlab'
-  }
-
-  # config files
-  file{'/home/gitlab/gitlab/config/gitlab.yml':
+  file {"/home/git/gitlab/config/gitlab.yml":
     ensure  => file,
-    owner   => 'gitlab',
+    owner   => 'git',
     group   => 'git',
-    mode    => 660,
-    source  => $config,
-    require => Exec['clone-gitlab-gitlab']
+    mode    => 755,
+    source  => $gitlab_config_file,
+    require => Vcsrepo['/home/git/gitlab']
   }
 
-  file{'/home/gitlab/gitlab/config/database.yml':
+  # ensure write perms on log and tmp dirs
+  file {'/home/git/gitlab/log':
+    ensure  => directory,
+    owner   => 'git',
+    group   => 'git',
+    mode    => '755',
+    require =>  Vcsrepo['/home/git/gitlab']
+  }
+  file {'/home/git/gitlab/tmp':
+    ensure  => directory,
+    owner   => 'git',
+    group   => 'git',
+    mode    => '755',
+    require =>  Vcsrepo['/home/git/gitlab']
+  }
+
+  # create a directory for satellites
+  file {'/home/git/gitlab-satellites':
+    ensure => directory,
+    owner  => 'git',
+    group  => 'git',
+    mode   => '755',
+    require => User['git']
+  }
+  # for sockets
+  file {'/home/git/gitlab/tmp/sockets':
+    ensure => directory,
+    owner  => 'git',
+    group  => 'git',
+    mode   => '755',
+    require =>  Vcsrepo['/home/git/gitlab']
+  }
+  # and for pids
+  file {'/home/git/gitlab/tmp/pids':
+    ensure => directory,
+    owner  => 'git',
+    group  => 'git',
+    mode   => '755',
+    require =>  Vcsrepo['/home/git/gitlab']
+  }
+  # and for uploads (or backups will fail)
+  file {'/home/git/gitlab/public/uploads':
+    ensure => directory,
+    owner  => 'git',
+    group  => 'git',
+    mode   => '755',
+    require =>  Vcsrepo['/home/git/gitlab']
+  }
+
+  # unicorn config  
+  file {"/home/git/gitlab/config/unicorn.rb":
+    ensure => file,
+    owner  => 'git',
+    group  => 'git',
+    mode   => 755,
+    source  => $gitlab_unicorn_config_file,
+    require =>  Vcsrepo['/home/git/gitlab']
+  }
+
+
+  # git config
+  file {'/home/git/.gitconfig':
+    ensure => file,
+    owner  => 'git',
+    group  => 'git',
+    mode   => 755,
+    source  => $gitlab_git_config_file,
+    require => User['git']
+  }
+  
+  # puma config
+  file {'/home/git/gitlab/config/puma.rb':
+    ensure => file,
+    owner  => 'git',
+    group  => 'git',
+    mode   => 750,
+    source => $gitlab_puma_config_file,
+    require =>  Vcsrepo['/home/git/gitlab']
+  }
+
+
+  # datbase settings
+  file {'/home/git/gitlab/config/database.yml':
+    ensure => file,
+    owner  => 'git',
+    group  => 'git',
+    mode   => 600,
+    source  => $gitlab_database_config_file,
+    require => [Class['git::gitlab::database'], Vcsrepo['/home/git/gitlab']]
+  }
+
+  # nginx config
+  file {'/etc/nginx/sites-available/gitlab':
     ensure  => file,
-    owner   => 'gitlab',
-    group   => 'git',
-    mode    => 660,
-    source  => $dbconfig,
-    require => Exec['clone-gitlab-gitlab']
+    owner   => 'root',
+    group   => 'root',
+    mode    => 755,
+    source  => $gitlab_nginx_config_file,
+    require => Class['nginx']
   }
-    
-  #Install gems 
-  # this seems to be failing unless you run it manually and I can't see why.
-  exec {'gitlab-install-gems':
-    command     => 'bundle install --without development test --deployment',
-    user        => 'gitlab',
-    cwd         => '/home/gitlab/gitlab',
-    environment => 'HOME=/home/gitlab',
-    refreshonly => true,
-    subscribe   => File['/home/gitlab/gitlab/config/gitlab.yml']
+  exec{'/bin/ln -s /etc/nginx/sites-available/gitlab /etc/nginx/sites-enabled/gitlab':
+    require => File['/etc/nginx/sites-available/gitlab'],
+    creates => '/etc/nginx/sites-enabled/gitlab',
+    notify  => Service[$nginx::params::service] 
   }
 
-  #Setup database
-  exec{'gitlab-setup-database':
-    command     => 'bundle exec rake gitlab:app:setup RAILS_ENV=production',
-    user        => 'gitlab',
-    cwd         => '/home/gitlab/gitlab',
-    environment => 'HOME=/home/gitlab',
-    subscribe   => File['/home/gitlab/gitlab/config/database.yml'],
+
+  # run the install script
+  exec {'/usr/local/bin/bundle install --deployment --without development test postgres unicorn aws':
+    cwd => '/home/git/gitlab',
+    user => 'git',
+    require => User['git'],
+    subscribe => Vcsrepo['/home/git/gitlab'],
     refreshonly => true
+  } 
+
+ file {'/home/git/gitlab/gitlab-install-yes':
+    ensure => file,
+    owner  => 'git',
+    group  => 'git',
+    mode   => '600',
+    content => "yes\n",
+    require => [User['git'],Vcsrepo['/home/git/gitlab']]
+  }
+ # Initialise the database and activate advanced features
+ # Note that this will overwrite anything in the database, so we really need to make sure it's not being run
+ # more than once. 
+ exec {'/usr/local/bin/bundle exec rake gitlab:setup RAILS_ENV=production < /home/git/gitlab/gitlab-install-yes':
+    cwd => '/home/git/gitlab',
+    user => 'git',
+    subscribe => File['/home/git/gitlab/gitlab-install-yes'],
+    refreshonly => true 
+ }
+
+ # init script
+ file {'/etc/init.d/gitlab':
+   ensure => file,
+   owner  => 'root',
+   group  => 'root',
+   mode   => 755,
+   source => $gitlab_init_file,
+   require => Vcsrepo['/home/git/gitlab']
+ }
+
+  # expects python2 binary. 
+  exec{'/bin/ln -s /usr/bin/python /usr/bin/python2':
+    creates => '/usr/bin/python2'
   }
 
-  #Setup GitLab hooks
-  exec{'gitlab-setup-hooks':
-    command     => 'cp /home/gitlab/gitlab/lib/hooks/post-receive /home/git/.gitolite/hooks/common/post-receive',
-    user        => 'root',
-    require     => Exec['setup_gitlab_gitolite'],
-    refreshonly => true,
-    subscribe   => Exec['setup_gitlab_gitolite'] # from git::gitlab::gitolite
-  }
-  file{'/home/git/.gitolite/hooks/common/post-receive':
-    ensure      => file,
-    owner       => 'git',
-    group       => 'git',
-    mode        => 660,
-    require     => Exec['gitlab-setup-hooks'],
-  }
 
-  # Install init script
-  file{'/etc/init.d/gitlab':
-    ensure   => file,
-    owner    => 'root',
-    group    => 'root',
-    mode     => 755,
-    source   => 'puppet:///modules/git/gitlab.init',
-    notify   => Class['git::gitlab::service']
-  }
+}
 
-  # Unicorn
-  file{'/home/gitlab/gitlab/config/unicorn.rb':
-    ensure  => file,
-    owner   => 'gitlab',
-    group   => 'git',
-    mode    => 660,
-    source  => $unicornconfig,
-    require => Exec['clone-gitlab-gitlab']
-  }
-  # this doesn't work unless you do it by hand. 
-  exec{'gitlab-bundle-unicorn':
-    command     => 'bundle exec unicorn_rails -c config/unicorn.rb -E production -D',
-    user        => 'gitlab',
-    cwd         => '/home/gitlab/gitlab',
-    environment => 'HOME=/home/gitlab',
-    subscribe   => File['/home/gitlab/gitlab/config/unicorn.rb'],
-    refreshonly => true
-  }
-
-  # add the gitlab config to nginx
-  file{'/etc/nginx/sites-available/gitlab':
-    ensure   => file,
-    owner    => 'root',
-    group    => 'root',
-    mode     => 755,
-    source   => 'puppet:///modules/git/gitlab.nginx',
-    require  => Package['nginx']
-  }
-  exec{'gitlab-ln-nginx':
-    command   => 'ln -s /etc/nginx/sites-available/gitlab /etc/nginx/sites-enabled/gitlab',
-    user      => 'root',
-    creates   => '/etc/nginx/sites-enabled/gitlab',
-    require   => File['/etc/nginx/sites-available/gitlab'],
-    notify    => Class['nginx::service']
-  }
-
- 
-
-} 

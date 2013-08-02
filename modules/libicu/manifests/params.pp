@@ -1,7 +1,7 @@
 class libicu::params {
   case $operatingsystem {
     /(Ubuntu|Debian)/:{
-      $pkg_name = 'libicu44'
+      $pkg_name = 'libicu48'
       $dev_pkg_name = 'libicu-dev'
     }
     /(RedHat|CentOS|Fedora|Scientific)/:{
