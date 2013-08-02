@@ -1,3 +1,10 @@
 class vim{
-  include vim::params, vim::install
+
+  # don't bother for rhel flavours, is installed with core.
+  case $operatingsystem {
+    /(Debian|Ubuntu)/:{
+      include vim::params, vim::install
+    }
+  }
+
 }
