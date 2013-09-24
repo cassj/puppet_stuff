@@ -1,4 +1,4 @@
-class opal::install{
+class opal::install ($version){
 
   case $operatingsystem{
     /Ubuntu|Debian/:{
@@ -32,7 +32,7 @@ class opal::install{
       }
 
       package { "opal":
-       ensure   => '1.10.5-b16934',
+       ensure   => $version,
        require  => File['/etc/apt/sources.list.d/opal.list']
       }
     }

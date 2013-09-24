@@ -19,6 +19,8 @@
   rundir = /var/run/puppet
   logdir = /var/log/puppet
   ssldir = $vardir/ssl
+  templatedir = /etc/puppet/templates
+
 
 [master]
 
@@ -31,5 +33,6 @@
 
   pluginsync = false
   report = true
+  
   server = <%= puppetserver %>
 

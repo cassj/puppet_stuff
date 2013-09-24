@@ -33,6 +33,7 @@ class git::gitlab::database ($mysql_config_file,
     database      => $mysql_database,
     priv          => 'SELECT, LOCK TABLES, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER',
     root_password => $mysql_root_pass,
+    password      => $mysql_user_pass,
     require => [Mysql::User[$mysql_user], Mysql::Database[$mysql_database]]
   }
 

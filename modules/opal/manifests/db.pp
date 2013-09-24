@@ -12,6 +12,7 @@ class opal::db($opaldb, $opalkeydb, $dbuser, $dbpass, $mysql_root_pass){
   mysql::grant{"$dbuser-$opaldb":
     user          => $dbuser,
     database      => $opaldb,
+    password      => $dbpass,
     root_password => $mysql_root_pass
   }
   #opalkey db
@@ -21,6 +22,7 @@ class opal::db($opaldb, $opalkeydb, $dbuser, $dbpass, $mysql_root_pass){
   mysql::grant{"$dbuser-$opalkeydb":
     user          => $dbuser,
     database      => $opalkeydb,
+    password      => $dbpass,
     root_password => $mysql_root_pass
   }
   #set utf8 charset
