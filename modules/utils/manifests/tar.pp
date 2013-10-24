@@ -31,7 +31,8 @@ class utils::tar inherits utils::base {
       creates => $creates,
       user    => $user,
       group   => $group,
-      path    => $utils::base::path
+      path    => '/bin/'
+      #path    => $utils::base::path
     }
   }
 

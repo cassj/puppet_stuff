@@ -14,7 +14,8 @@ define wordpress::blog(
   $blog_dir = 'blog'
 ){
 
-  include apache,mysql,php
+  # should assume lamp stack? Can't define it twice.
+  # include apache,mysql,php
   include wordpress::params
   include utils::tar
 
@@ -32,6 +33,7 @@ define wordpress::blog(
     table         => '*',
     priv          => 'ALL',
     root_password => $mysql_root_pass,
+    password      => $db_pass,
     require       => [Mysql::Database[$db], Mysql::User[$db_user]]
  }
 

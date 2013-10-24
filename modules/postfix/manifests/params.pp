@@ -10,8 +10,9 @@ class postfix::params {
   }
 
 
-   $cfg_master = '/etc/postfix/master.cf'
-   $cfg_main   = '/etc/postfix/main.cf'
+   $dir        = '/etc/postfix'
+   $cfg_master = "$dir/master.cf"
+   $cfg_main   = "$dir/main.cf"
    $user       = 'postfix'
    $service    = 'postfix'
 }

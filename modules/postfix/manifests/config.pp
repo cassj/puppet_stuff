@@ -28,7 +28,7 @@ class postfix::config($master_file,$main_template,$sasl_passwd_file){
     require  => File[$postfix::params::cfg_main],
     notify   => Exec['sasl_db']
   }
-  
+
   exec{"sasl_db":
     cwd     => "/etc/postfix",
     command => "/usr/sbin/postmap sasl_passwd",

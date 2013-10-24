@@ -1,9 +1,7 @@
 class utils::base {
 
-  $path = '/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin'
-
-  Exec { path => $path }
-
+  $path = [ "/bin/", "/sbin/" , "/usr/bin/", "/usr/sbin/", "/usr/local/bin/" ] 
+#  Exec { path => [ "/bin/", "/sbin/" , "/usr/bin/", "/usr/sbin/", "/usr/local/bin/" ] }
   Package {ensure => installed}
 
 }

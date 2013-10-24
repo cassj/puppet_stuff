@@ -1,4 +1,4 @@
-class dataverse::install {
+c-lass dataverse::install {
 
   include dataverse::params
 
