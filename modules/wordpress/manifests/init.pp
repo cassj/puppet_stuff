@@ -3,7 +3,7 @@ class wordpress($mysql_config_source) {
   class{'mysql':
     configsource => $mysql_config_source
   }
-  include php,php::mysql,php::apc
+  include php::mysql,php::apc
   class{'apache':
     mpm_module => prefork
   }
